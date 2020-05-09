@@ -1,0 +1,20 @@
+{
+    "name": "gazuka/outils",
+    "description": "Quelques outils pour simplifier et accelerer le developpement d'un controller sur Symfony.",
+    "keywords": ["outils", "symfony", "controller"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jérôme CARION",
+            "email": "jerome.carion@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Outils": "src/"
+        }
+    }
+}
