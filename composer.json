@@ -13,8 +13,8 @@
         "php": ">=5.3.3"
     },
     "autoload": {
-        "psr-0": {
-            "Outils": "src/"
+        "psr-4": {
+            "": "src/"
         }
     }
 }

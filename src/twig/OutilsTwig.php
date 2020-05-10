@@ -2,7 +2,7 @@
 
 namespace Gazuka\Outils;
 
-class OutilsService {
+class OutilsTwig {
     
     private $twig;
 
