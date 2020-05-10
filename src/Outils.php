@@ -18,8 +18,6 @@ class Outils {
         // $outilsTwig = $this->recupOutilsTwig();
         // $this->outilsTwig->setTwig('coucou');
         // $outilsTwig->setTwig('test');
-        // echo($outilsTwig);
-        // echo($this->outilsTwig);
     }
 
     //Gestion du Twig - Prive
