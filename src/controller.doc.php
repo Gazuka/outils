@@ -1,12 +1,12 @@
-<?
+<?php
     /**FONCTION A COLLER DANS LE CONTROLLER DU SITE */
-    
+
     /**
      * Fonction qui permet au controller d'utiliser les fonctionnalités de Gazuka/Outils
      */
     
     /*
-     protected function afficher()
+    protected function afficher()
     {
         $jobController = $this->outilsService->afficher();
         switch($jobController['fonction'])
