@@ -93,6 +93,7 @@ class Outils {
      */
     private function recupOutilsAffichage():OutilsAffichage
     {
+        
         if($this->outilsAffichage == null)
         {
             $this->outilsAffichage = new OutilsAffichage();
