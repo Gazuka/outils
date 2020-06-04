@@ -41,8 +41,8 @@ class Outils {
             else
             {
                 $this->defineTwig($this->outilsFormulaire->getTwigFormulaire());
-                $this->defineParamTwig('form', $this->formulaireService->getForm());
-                $this->defineParamTwig('element', $this->formulaireService->getElement());
+                $this->defineParamTwig('form', $this->outilsFormulaire->getForm());
+                $this->defineParamTwig('element', $this->outilsFormulaire->getElement());
             } 
         }
         
