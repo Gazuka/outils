@@ -35,7 +35,7 @@ class Outils {
         {
             if($this->outilsFormulaire->getRedirect() != null)
             {
-                $this->defineRedirect($this->outilsFormulaire->getRedirect());
+                $this->defineRedirection($this->outilsFormulaire->getRedirect());
                 $this->defineParamRedirect($this->outilsFormulaire->getPageResultatConfig());
             }
             else
