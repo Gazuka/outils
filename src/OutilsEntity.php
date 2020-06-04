@@ -6,9 +6,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OutilsEntity {
     
-    public function __construct()
+    private $manager;
+
+    public function __construct($manager)
     {
         //Constructeur à garder même vide (afin de ne pas utiliser celui de outils en boucle...)
+        $this->manager = $manager;
     }
 
     /**

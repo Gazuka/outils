@@ -19,7 +19,7 @@ class Outils {
     public function __construct(EntityManagerInterface $manager, RequestStack $requestStack)
     {
         $this->outilsAffichage = new OutilsAffichage();
-        $this->outilsEntity = new OutilsEntity();
+        $this->outilsEntity = new OutilsEntity($manager);
         $this->outilsFormulaire = new OutilsFormulaire($requestStack);
         $this->manager = $manager;
     }
