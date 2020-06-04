@@ -1,16 +1,16 @@
 <?php
 
-namespace Gazuka\Outils\Formulaire;
+namespace Gazuka\Outils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class OutilsFormulaire {
     
     //Reçus dans le constructeur
     private $request;               //Objet Request
-    private $manager;               //Objet EntityManagerInterface
-
+    
     //Setters obligatoires
     private $element;               //Objet que l'on souhaite obtenir avec ce formulaire
     private $classType;             //Classe du formulaire (ObjetType::class)
@@ -25,8 +25,9 @@ class OutilsFormulaire {
     private $deletes = null;               //Le tableau des objets susceptible de devenir orphelin sous la forme ['findBy' => 'element', 'classEnfant' => 'sousElement', 'repo' => $repoSousElement] (element : nom de l'élément actif dans la BDD, sousElement : nom de la sous classe au pluriel, repoSousElement : repository de la sous classe)
     private $actions = null;               //Le tableau
     
-    //On doit récupérer le controller pour executer les actions !
-    private $controller; //??? pas possible ici ????????????????????????????????????????????????????????
+    //Controller permet d'utiliser les actions
+    private $controller;
+    private $manager;
 
     //A créer obligatoirement dans le controller et envoyer via le setter
     private $form;                  //Formulaire créé dans le controller
@@ -40,9 +41,8 @@ class OutilsFormulaire {
     /*========================================================================================*/
     /** FONCTIONS MAGIQUES ********************************************************************/
 
-    public function __construct(EntityManagerInterface $manager, RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->manager = $manager;
         $this->request = $requestStack->getCurrentRequest();
     }
     /*========================================================================================*/
@@ -50,10 +50,9 @@ class OutilsFormulaire {
     /*========================================================================================*/
     /** FONCTIONS GET ET SET ******************************************************************/
 
-    public function setActions($controller, $actions) //????????????????????????????????????????????????????????
+    public function setActions($actions) 
     {
         $this->actions = $actions;
-        $this->controller = $controller;
     }
     public function getClassType()
     {
@@ -128,8 +127,11 @@ class OutilsFormulaire {
     /*========================================================================================*/
     /** FONCTIONS PUBLIQUES *******************************************************************/
     
-    public function creerFormulaire():void
+    public function creer($controller, $manager):void
     {
+        $this->controller = $controller;
+        $this->manager = $manager;
+        
         $this->form->handleRequest($this->request);
 
         //On vérifie que le formulaire soit soumis et valide
@@ -156,8 +158,8 @@ class OutilsFormulaire {
                 $this->methode_Deletes();
             }
 
-            //On enregistre le tout
-            $this->manager->flush();
+            // //On enregistre le tout
+            // $this->manager->flush();
 
             //On dynamise le texte de confirmation du formulaire
             if($this->texteConfirmationEval != null)
@@ -247,6 +249,4 @@ class OutilsFormulaire {
         }
     }
 
-
-    
 }

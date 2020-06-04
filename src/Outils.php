@@ -2,25 +2,48 @@
 
 namespace Gazuka\Outils;
 
-use Gazuka\Outils\Entity\OutilsEntity;
+use Gazuka\Outils\OutilsEntity;
+use Gazuka\Outils\OutilsAffichage;
+use Gazuka\Outils\OutilsFormulaire;
 use Doctrine\ORM\EntityManagerInterface;
-use Gazuka\Outils\Affichage\OutilsAffichage;
-use Gazuka\Outils\Formulaire\OutilsFormulaire;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class Outils {
     
-    private $outilsAffichage;
-    private $outilsEntity;
-    private $outilsFormulaire;
-    private $manager;
+    protected $outilsAffichage;
+    protected $outilsEntity;
+    protected $outilsFormulaire;
+    protected $manager;
+    protected $jobController = array();
 
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, RequestStack $requestStack)
     {
+        $this->outilsAffichage = new OutilsAffichage();
+        $this->outilsEntity = new OutilsEntity();
+        $this->outilsFormulaire = new OutilsFormulaire($requestStack);
         $this->manager = $manager;
     }
 
-    //Gestion de l'affichage - Public ===============================================================================
+    /** Retourne un tableau que le controller analysera pour effectuer son affichage
+     *
+     * @return Array
+     */
+    public function recupJobController():array
+    {
+        //Donne le formulaire à Twig
+        $this->defineParamTwig('form', $this->outilsFormulaire->getForm());
+        
+        //Récupération du jobController de OutilsAffichage
+        $this->jobController['affichage'] = $this->outilsAffichage->jobController();
+        
+        //Retourne le jobController au Controller qui affichera la page
+        return $this->jobController;
+    }
 
+    ////////////////////////////////////////////////////////////////////////
+    // GESTION DE L'AFFICHAGE
+    ////////////////////////////////////////////////////////////////////////
+    
     /** Permet de définir le fichier .twig qui servira pour l'affichage de la page
      *
      * @param string $twig //Chemin du fichier twig depuis le dossier template
@@ -28,12 +51,10 @@ class Outils {
      */
     public function defineTwig(string $twig):void
     {
-        $outilsAffichage = $this->recupOutilsAffichage();
-        $outilsAffichage->setTwig($twig);
+        $this->outilsAffichage->setTwig($twig);
     }
 
-    /**
-     * Permet de définit les paramètres utiles au Twig lors de l'affichage
+    /** Permet de définit les paramètres utiles au Twig lors de l'affichage
      *
      * @param string $nom //Nom de la variable dans le twig
      * @param $valeur //Données qui seront utilisées dans le twig
@@ -41,24 +62,20 @@ class Outils {
      */
     public function defineParamTwig(string $nom, $valeur):void
     {
-        $outilsAffichage = $this->recupOutilsAffichage();
-        $outilsAffichage->addParametreTwig($nom, $valeur);
+        $this->outilsAffichage->addParametreTwig($nom, $valeur);
     }
 
-    /**
-     * Permet de définir le nom de la page qui sera utilisé lors de la redirection
+    /** Permet de définir le nom de la page qui sera utilisé lors de la redirection
      *
      * @param string $redirectionName
      * @return void
      */
     public function defineRedirection(string $redirectionName):void
     {
-        $outilsAffichage = $this->recupOutilsAffichage();
-        $outilsAffichage->setRedirection($redirectionName);
+        $this->outilsAffichage->setRedirection($redirectionName);
     }
 
-    /**
-     * Permet de définit les paramètres utiles à la redirection lors de l'affichage
+    /** Permet de définit les paramètres utiles à la redirection lors de l'affichage
      *
      * @param string $nom
      * @param [type] $valeur
@@ -66,45 +83,27 @@ class Outils {
      */
     public function defineParamRedirect(string $nom, $valeur)
     {
-        $outilsAffichage = $this->recupOutilsAffichage();
-        $outilsAffichage->addParametreRedirection($nom, $valeur);
+        $this->outilsAffichage->addParametreRedirection($nom, $valeur);
     }
 
-    /**
-     * Retourne un tableau que le controller analysera pour effectuer son affichage
-     *
-     * @return Array
-     */
-    public function afficher():array
+    ////////////////////////////////////////////////////////////////////////
+    // GESTION DES ENTITES
+    ////////////////////////////////////////////////////////////////////////
+    
+    /** Enregistre les entites */
+    public function enregistrer()
     {
-        //Enregistre tous les managers!!!
+        //Enregistre les entités dans le manager
         $this->manager->flush();
-        //Affiche la page
-        $outilsAffichage = $this->recupOutilsAffichage();
-        return $outilsAffichage->afficher();
     }
 
-    //Gestion de l'affichage - Prive ================================================================================
-
-    /**
-     * Permet de récupérer le OutilsAffichage (il le crée s'il n'existe pas encore)
-     *
-     * @return OutilsAffichage
-     */
-    private function recupOutilsAffichage():OutilsAffichage
+    public function persist($entity)
     {
-        
-        if($this->outilsAffichage == null)
-        {
-            $this->outilsAffichage = new OutilsAffichage();
-        }
-        return $this->outilsAffichage;
+        //Persist une entité dans le manager
+        $this->manager->persist($entity);
     }
 
-    //Gestion des entités - Public ==================================================================================
-
-    /**
-     * Permet de supprimer un objet de la base avec son ID
+    /** Supprimer une entité à partir de son Id
      *
      * @param string $class
      * @param integer $id
@@ -112,12 +111,20 @@ class Outils {
      */
     public function deleteEntityById(string $class, int $id):void
     {
-        $outilsEntity = $this->recupOutilsEntity();
-        $outilsEntity->deleteEntityById($class, $id);
+        $this->outilsEntity->deleteById($class, $id);
     }
 
-    /**
-     * Récupérer une entité à partir de son id
+    /** Récupérer toutes les entités
+     *
+     * @param string $class
+     * @return Array
+     */
+    public function findAllEntity(string $class):Array
+    {
+        return $this->outilsEntity->findAll($class);
+    }
+
+    /** Récupérer une entité à partir de son id
      *
      * @param string $class
      * @param integer $id
@@ -125,12 +132,10 @@ class Outils {
      */
     public function findEntityById(string $class, int $id):?Object
     {
-        $outilsEntity = $this->recupOutilsEntity();
-        return $outilsEntity->findEntityById($class, $id);
+        return $this->outilsEntity->findById($class, $id);
     }
 
-    /**
-     * Récupérer une entité à partir de son slug
+    /** Récupérer une entité à partir de son slug
      *
      * @param string $class
      * @param string $slug
@@ -138,24 +143,10 @@ class Outils {
      */
     public function findEntityBySlug(string $class, string $slug):?Object
     {
-        $outilsEntity = $this->recupOutilsEntity();
-        return $outilsEntity->findBySlug($class, $slug);
-    }
-    
-    /**
-     * Récupérer toutes les entités d'une classe
-     *
-     * @param string $class
-     * @return Array
-     */
-    public function findAllEntity(string $class):Array
-    {
-        $outilsEntity = $this->recupOutilsEntity();
-        return $outilsEntity->findAllEntity($class);
+        return $this->outilsEntity->findBySlug($class, $slug);
     }
 
-    /**
-     * Récupérer une entité
+    /** Récupérer une entité par critères simples
      *
      * @param string $class
      * @param array $criteria
@@ -166,114 +157,81 @@ class Outils {
      */
     public function findEntityBy(string $class, array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
     {
-        $outilsEntity = $this->recupOutilsEntity();
-        return $outilsEntity->findEntityBy($criteria, $orderBy, $limit, $offset);
+        return $this->outilsEntity->findBy($criteria, $orderBy, $limit, $offset);
     }
 
-    /**
-     * Permet de récupérer le Repo d'une Entité
+    /** Récupère le Repo d'une Entité
      * 
      * @param string $class
      */
     public function returnRepo(string $class)
     {
-        $outilsEntity = $this->recupOutilsEntity();
-        return $outilsEntity->returnRepo($class);
+        return $this->outils->getRepo($class);
     }
 
-
-    //Gestion des entités - Prive ===================================================================================
-
-    /**
-     * Permet de récupérer le OutilsEntity (il le crée s'il n'existe pas encore)
-     *
-     * @return OutilsEntity
-     */
-    private function recupOutilsEntity():OutilsEntity
+    ////////////////////////////////////////////////////////////////////////
+    // GESTION DES FORMULAIRES
+    ////////////////////////////////////////////////////////////////////////
+  
+    public function setFormActions($actions)
     {
-        if($this->outilsEntity == null)
-        {
-            $this->outilsEntity = new OutilsEntity($this->manager);
-        }
-        return $this->outilsEntity;
+        $this->outilsFormulaire->setActions($actions);
     }
 
-    //Gestion des formulaires - Public ==============================================================================
-
-    // public function setActions($controller, $actions) //????????????????????????????????????????????????????????
-    // {
-    //     $outilsFormulaire = $this->recupOutilsFormulaire();
-    //     $outilsFormulaire->setActions()
-    // }
     public function setFormClassType($classType)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setClassType($classType);
+        $this->outilsFormulaire->setClassType($classType);
+    }
+    public function getFormClassType()
+    {
+        return $this->outilsFormulaire->getClassType();
     }
 
     public function setFormElement($element)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setElement($element);
+        $this->outilsFormulaire->setElement($element);
+    }
+
+    public function getFormElement()
+    {
+        return $this->outilsFormulaire->getElement();
     }
     
     public function setFormForm($form)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setForm($form);
+        $this->outilsFormulaire->setForm($form);
     }
     
     public function setFormPageResultat($page)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setPageResultat($page);
+        $this->outilsFormulaire->setPageResultat($page);
     }
     
     public function setFormPageResultatConfig($config)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setPageResultatConfig($config);
+        $this->outilsFormulaire->setPageResultatConfig($config);
     }
     
     public function setFormTexteConfirmation($texte)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setTexteConfirmation($texte);
+        $this->outilsFormulaire->setTexteConfirmation($texte);
     }
     
     public function setFormTexteConfirmationEval($eval)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setTexteConfirmationEval($eval);
+        $this->outilsFormulaire->setTexteConfirmationEval($eval);
     }
     
     public function setFormTwigFormulaire($twigFormulaire)
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->setTwigFormulaire($twigFormulaire);
+        $this->outilsFormulaire->setTwigFormulaire($twigFormulaire);
     }
     
-    public function creerFormulaire():void
+    public function creerFormulaire($controller):void
     {
-        $outilsFormulaire = $this->recupOutilsFormulaire();
-        $outilsFormulaire->creerFormulaire();
+        $this->outilsFormulaire->creer($controller, $this->manager);
     }
-
-    //Gestion des formulaires - Privé ===============================================================================
-
-    /**
-     * Permet de récupérer le OutilsFormulaire (il le crée s'il n'existe pas encore)
-     *
-     * @return OutilsFormulaire
-     */
-    private function recupOutilsFormulaire():OutilsFormulaire
-    {
-        if($this->outilsFormulaire == null)
-        {
-            $this->outilsFormulaire = new OutilsFormulaire();
-        }
-        return $this->outilsFormulaire;
-    }
+    
 }
 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gazuka\Outils\Affichage;
+namespace Gazuka\Outils;
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,6 +13,7 @@ class OutilsAffichage {
 
     public function __construct()
     {
+        //Constructeur à garder même vide (afin de ne pas utiliser celui de outils en boucle...)
     }
 
     public function getTwig()
@@ -62,15 +63,15 @@ class OutilsAffichage {
     /**
      * Génère un jobController qui sera envoyé au controller
      */
-    public function afficher()
+    public function jobController()
     {
         //La redirection est prioritaire
         if($this->redirection != null)
         {
             //Afficher la redirection
             $jobController['fonction'] = 'redirectToRoute';
-            $jobController['arguments'][] = $this->redirection;
-            $jobController['arguments'][] = $this->parametresRedirection;
+            $jobController['route'] = $this->redirection;
+            $jobController['params'] = $this->parametresRedirection;
             return $jobController;
         }
         else
@@ -79,8 +80,8 @@ class OutilsAffichage {
             {
                 //Affiche la page
                 $jobController['fonction'] = 'render';
-                $jobController['arguments'][] = $this->twig;
-                $jobController['arguments'][] = $this->parametresTwig;
+                $jobController['twig'] = $this->twig;
+                $jobController['params'] = $this->parametresTwig;
                 return $jobController;
             }
         }
