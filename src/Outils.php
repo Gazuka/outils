@@ -30,10 +30,20 @@ class Outils {
      */
     public function recupJobController():array
     {
-        //Donne le formulaire à Twig
-        if($this->outilsFormulaire->getElement() != null)
+        //Vérifier si twig est vide et qu'il n'y a pas encore de redirect, alors c'est que nous devons attendre une réponse de formulaireService
+        if($this->outilsAffichage->getTwig() == null && $this->outilsAffichage->getRedirect() == null)
         {
-            $this->defineParamTwig('form', $this->outilsFormulaire->getForm());
+            if($this->outilsFormulaire->getRedirect() != null)
+            {
+                $this->defineRedirect($this->outilsFormulaire->getRedirect());
+                $this->defineParamRedirect($this->outilsFormulaire->getPageResultatConfig());
+            }
+            else
+            {
+                $this->defineTwig($this->outilsFormulaire->getTwigFormulaire());
+                $this->defineParamTwig('form', $this->formulaireService->getForm());
+                $this->defineParamTwig('element', $this->formulaireService->getElement());
+            } 
         }
         
         //Récupération du jobController de OutilsAffichage
