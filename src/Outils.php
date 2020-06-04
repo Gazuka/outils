@@ -36,7 +36,7 @@ class Outils {
             if($this->outilsFormulaire->getRedirect() != null)
             {
                 $this->defineRedirection($this->outilsFormulaire->getRedirect());
-                $this->defineParamRedirect($this->outilsFormulaire->getPageResultatConfig());
+                $this->defineParamsRedirect($this->outilsFormulaire->getPageResultatConfig());
             }
             else
             {
@@ -97,6 +97,19 @@ class Outils {
     public function defineParamRedirect(string $nom, $valeur)
     {
         $this->outilsAffichage->addParametreRedirection($nom, $valeur);
+    }
+
+    /** Permet de définit plusieurs paramètres utiles à la redirection lors de l'affichage
+     *
+     * @param array $valeurs
+     * @return void
+     */
+    public function defineParamsRedirect($valeurs)
+    {
+        foreach($valeurs as $nom => $valeur)
+        {
+            $this->outilsAffichage->addParametreRedirection($nom, $valeur);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////

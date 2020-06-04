@@ -173,7 +173,8 @@ class OutilsFormulaire {
             //On prépare la redirection
             $this->redirect = true;
 
-            $this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1))] = $this->element->getId();
+            //$this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1))] = $this->element->getId();
+            $this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1)) => $this->element->getId()];
         }
     }
 
