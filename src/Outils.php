@@ -33,9 +33,9 @@ class Outils {
         //Vérifier si twig est vide et qu'il n'y a pas encore de redirect, alors c'est que nous devons attendre une réponse de formulaireService
         if($this->outilsAffichage->getTwig() == null && $this->outilsAffichage->getRedirection() == null)
         {
-            if($this->outilsFormulaire->getRedirection() != null)
+            if($this->outilsFormulaire->getRedirect() != null)
             {
-                $this->defineRedirect($this->outilsFormulaire->getRedirection());
+                $this->defineRedirect($this->outilsFormulaire->getRedirect());
                 $this->defineParamRedirect($this->outilsFormulaire->getPageResultatConfig());
             }
             else
