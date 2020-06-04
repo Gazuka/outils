@@ -1,25 +1,40 @@
 <?php
     /**FONCTION A COLLER DANS LE CONTROLLER DU SITE */
 
-    /**
-     * Fonction qui permet au controller d'utiliser les fonctionnalités de Gazuka/Outils
-     */
-    
-    /*
-    protected function afficher()
+    public function __construct(EntityManagerInterface $manager, RequestStack $requestStack)
     {
-        $jobController = $this->outilsService->afficher();
-        switch($jobController['fonction'])
+        $this->outilsBox = new Outils($manager, $requestStack);    
+    }
+
+    /** FONCTIONS A INSERER DANS LE CONTROLLER
+     * 
+     */
+    protected function jobController()
+    {
+        //Si besoin on crée un formulaire
+        if($this->outilsBox->getFormClassType() != null && $this->outilsBox->getFormElement() != null)
+        {
+            $this->outilsBox->setFormForm($this->createForm($this->outilsBox->getFormClassType(), $this->outilsBox->getFormElement()));
+            $this->outilsBox->creerFormulaire($this);
+        }
+        
+        //On récupére le jobController
+        $jobController = $this->outilsBox->recupJobController();
+
+        //On enregistre les données du manager
+        $this->outilsBox->enregistrer();
+
+        //On recherche ce qui doit être affiché
+        switch($jobController['affichage']['fonction'])
         {
             case 'redirectToRoute':
-                return $this->redirectToRoute($jobController['arguments'][0], $jobController['arguments'][1]);
+                return $this->redirectToRoute($jobController['affichage']['route'], $jobController['affichage']['params']);
             break;
             case 'render':
-                return $this->render($jobController['arguments'][0], $jobController['arguments'][1]);
+                return $this->render($jobController['affichage']['twig'], $jobController['affichage']['params']);
             break;
             default:
-                //Affichage de la page d'erreur !
+                //Affichage d'une page d'erreur ou d'une redirection !
             break;
         }
     }
-    */
