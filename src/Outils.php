@@ -31,7 +31,10 @@ class Outils {
     public function recupJobController():array
     {
         //Donne le formulaire à Twig
-        $this->defineParamTwig('form', $this->outilsFormulaire->getForm());
+        if($this->outilsFormulaire->getElement() != null)
+        {
+            $this->defineParamTwig('form', $this->outilsFormulaire->getForm());
+        }
         
         //Récupération du jobController de OutilsAffichage
         $this->jobController['affichage'] = $this->outilsAffichage->jobController();
