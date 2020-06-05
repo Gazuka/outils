@@ -36,13 +36,13 @@ class Outils {
             if($this->outilsFormulaire->getRedirect() != null)
             {
                 $this->defineRedirection($this->outilsFormulaire->getRedirect());
-                $this->defineParamsRedirect($this->outilsFormulaire->getPageResultatConfig());
+                $this->addParamsRedirect($this->outilsFormulaire->getPageResultatConfig());
             }
             else
             {
                 $this->defineTwig($this->outilsFormulaire->getTwigFormulaire());
-                $this->defineParamTwig('form', $this->outilsFormulaire->getForm());
-                $this->defineParamTwig('element', $this->outilsFormulaire->getElement());
+                $this->addParamTwig('form', $this->outilsFormulaire->getForm());
+                $this->addParamTwig('element', $this->outilsFormulaire->getElement());
             } 
         }
         
