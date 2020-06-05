@@ -73,7 +73,7 @@ class Outils {
      * @param $valeur //Données qui seront utilisées dans le twig
      * @return void
      */
-    public function defineParamTwig(string $nom, $valeur):void
+    public function addParamTwig(string $nom, $valeur):void
     {
         $this->outilsAffichage->addParametreTwig($nom, $valeur);
     }
@@ -94,7 +94,7 @@ class Outils {
      * @param [type] $valeur
      * @return void
      */
-    public function defineParamRedirect(string $nom, $valeur)
+    public function addParamRedirect(string $nom, $valeur)
     {
         $this->outilsAffichage->addParametreRedirection($nom, $valeur);
     }
@@ -183,7 +183,7 @@ class Outils {
      */
     public function findEntityBy(string $class, array $criteria, array $orderBy = null, int $limit = null, int $offset = null)
     {
-        return $this->outilsEntity->findBy($criteria, $orderBy, $limit, $offset);
+        return $this->outilsEntity->findBy($class, $criteria, $orderBy, $limit, $offset);
     }
 
     /** Récupère le Repo d'une Entité
