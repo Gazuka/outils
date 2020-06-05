@@ -174,7 +174,7 @@ class OutilsFormulaire {
             $this->redirect = true;
 
             $this->manager->flush(); //On enregistre maintenant afin de donner un id à l'élément !
-            $this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1))][$this->element->getId()];
+            $this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1))] = $this->element->getId();
         }
     }
 

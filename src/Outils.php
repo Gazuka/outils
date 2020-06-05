@@ -104,7 +104,7 @@ class Outils {
      * @param array $valeurs
      * @return void
      */
-    public function defineParamsRedirect($valeurs)
+    public function addParamsRedirect($valeurs)
     {
         foreach($valeurs as $nom => $valeur)
         {

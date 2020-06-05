@@ -55,7 +55,7 @@ class OutilsAffichage {
         return $this->parametresRedirection;
     }
 
-    public function addParametreRedirection(string $nom, object $valeur)
+    public function addParametreRedirection(string $nom, $valeur)
     {
         $this->parametresRedirection[$nom] = $valeur;
     }
