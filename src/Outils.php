@@ -13,14 +13,16 @@ class Outils {
     protected $outilsAffichage;
     protected $outilsEntity;
     protected $outilsFormulaire;
+    protected $outilsPage;
     protected $manager;
     protected $jobController = array();
 
-    public function __construct(EntityManagerInterface $manager, RequestStack $requestStack)
+    public function __construct(EntityManagerInterface $manager, RequestStack $requestStack, $classePage = null)
     {
         $this->outilsAffichage = new OutilsAffichage();
         $this->outilsEntity = new OutilsEntity($manager);
         $this->outilsFormulaire = new OutilsFormulaire($requestStack);
+        $this->outilsPage = new OutilsPage($manager, $requestStack, $classePage);
         $this->manager = $manager;
     }
 
@@ -30,6 +32,12 @@ class Outils {
      */
     public function recupJobController():array
     {
+        if($this->outilsPage->getPageMere() != null)
+        {
+            $this->outilsFormulaire->setPageResultat($this->outilsPage->getPageMere()->getNomChemin());
+            $this->outilsFormulaire->setPageResultatConfig($this->outilsPage->getPageMere()->getParams());
+        }
+
         //Vérifier si twig est vide et qu'il n'y a pas encore de redirect, alors c'est que nous devons attendre une réponse de formulaireService
         if($this->outilsAffichage->getTwig() == null && $this->outilsAffichage->getRedirection() == null)
         {
@@ -49,6 +57,10 @@ class Outils {
         //Récupération du jobController de OutilsAffichage
         $this->jobController['affichage'] = $this->outilsAffichage->jobController();
         
+        //On enregistre le tout
+        $this->outilsPage->enregistrer();
+        $this->enregistrer();
+
         //Retourne le jobController au Controller qui affichera la page
         return $this->jobController;
     }
@@ -116,7 +128,7 @@ class Outils {
     // GESTION DES ENTITES
     ////////////////////////////////////////////////////////////////////////
     
-    /** Enregistre les entites */
+    /** Enregistre les entites et la page */
     public function enregistrer()
     {
         //Enregistre les entités dans le manager
@@ -256,6 +268,25 @@ class Outils {
     public function creerFormulaire($controller):void
     {
         $this->outilsFormulaire->creer($controller, $this->manager);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // GESTION DE LA PAGE
+    ////////////////////////////////////////////////////////////////////////
+    
+    public function getPageIdActuel()
+    {
+        return $this->outilsPage->getPageId();
+    }
+
+    public function getPagePageMere()
+    {
+        return $this->outilsPage->getPageMere();
+    }
+
+    public function setPageParams($params)
+    {
+        $this->outilsPage->setParams($params);
     }
     
 }
