@@ -204,7 +204,7 @@ class Outils {
      */
     public function returnRepo(string $class)
     {
-        return $this->outils->getRepo($class);
+        return $this->outilsEntity->getRepo($class);
     }
 
     ////////////////////////////////////////////////////////////////////////
