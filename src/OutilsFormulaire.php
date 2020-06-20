@@ -14,7 +14,7 @@ class OutilsFormulaire {
     //Setters obligatoires
     private $element;               //Objet que l'on souhaite obtenir avec ce formulaire
     private $classType;             //Classe du formulaire (ObjetType::class)
-    private $twigformulaire;        //Chemin du template du formulaire
+    private $twigFormulaire;        //Chemin du template du formulaire
     private $pageResultat;          //Nom de la page de redirection après validation du formulaire
     private $texteConfirmation;     //Texte affiché lors de la validation du formulaire
      
@@ -98,7 +98,14 @@ class OutilsFormulaire {
     {
         if($this->redirect == true)
         {
-            return $this->pageResultat;
+            if($this->pageResultat != null)
+            {
+                return $this->pageResultat;
+            }
+            else
+            {
+                return true;
+            }
         }
         else
         {
@@ -115,11 +122,11 @@ class OutilsFormulaire {
     }
     public function getTwigFormulaire()
     {
-        return $this->TwigFormulaire;
+        return $this->twigFormulaire;
     }
     public function setTwigFormulaire($twigFormulaire)
     {
-        $this->TwigFormulaire = $twigFormulaire;
+        $this->twigFormulaire = $twigFormulaire;
     }
     
     /*========================================================================================*/
@@ -158,9 +165,6 @@ class OutilsFormulaire {
                 $this->methode_Deletes();
             }
 
-            // //On enregistre le tout
-            // $this->manager->flush();
-
             //On dynamise le texte de confirmation du formulaire
             if($this->texteConfirmationEval != null)
             {
@@ -173,8 +177,11 @@ class OutilsFormulaire {
             //On prépare la redirection
             $this->redirect = true;
 
-            $this->manager->flush(); //On enregistre maintenant afin de donner un id à l'élément !
-            $this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1))] = $this->element->getId();
+            if(empty($this->element->getId()))
+            {
+                $this->manager->flush(); //On enregistre maintenant afin de donner un id à l'élément !
+                $this->pageResultatConfig[strtolower('id'.substr(strrchr(get_class($this->element), "\\"), 1))] = $this->element->getId();
+            }
         }
     }
 

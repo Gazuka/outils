@@ -32,25 +32,52 @@ class Outils {
      */
     public function recupJobController():array
     {
-        if($this->outilsPage->getPageMere() != null)
-        {
-            $this->outilsFormulaire->setPageResultat($this->outilsPage->getPageMere()->getNomChemin());
-            $this->outilsFormulaire->setPageResultatConfig($this->outilsPage->getPageMere()->getParams());
-        }
-
         //Vérifier si twig est vide et qu'il n'y a pas encore de redirect, alors c'est que nous devons attendre une réponse de formulaireService
         if($this->outilsAffichage->getTwig() == null && $this->outilsAffichage->getRedirection() == null)
         {
+            //Si une redirection existe, elle est prioritaire
             if($this->outilsFormulaire->getRedirect() != null)
             {
-                $this->defineRedirection($this->outilsFormulaire->getRedirect());
-                $this->addParamsRedirect($this->outilsFormulaire->getPageResultatConfig());
+                //Une redirection doit être effectuer
+                if($this->outilsFormulaire->getRedirect() == true)
+                {
+                    //Si une page mere existe on y retourne
+                    if($this->outilsPage->getPageMere() != null)
+                    {
+                        $this->defineRedirection($this->outilsPage->getPageMere()->getNomChemin());
+                        foreach($this->outilsPage->getPageMere()->getParams() as $param => $valeur)
+                        {
+                            $this->addParamRedirect($param, $valeur);
+                        }                        
+                    }
+                }
+                else
+                {
+                    $this->defineRedirection($this->outilsFormulaire->getRedirect());
+                    $this->addParamsRedirect($this->outilsFormulaire->getPageResultatConfig());
+                }                
             }
             else
             {
-                $this->defineTwig($this->outilsFormulaire->getTwigFormulaire());
-                $this->addParamTwig('form', $this->outilsFormulaire->getForm());
-                $this->addParamTwig('element', $this->outilsFormulaire->getElement());
+                //Sinon un twig est défini pour le formulaire, on l'affiche
+                if($this->outilsFormulaire->getTwigFormulaire() != null)
+                {
+                    $this->defineTwig($this->outilsFormulaire->getTwigFormulaire());
+                    $this->addParamTwig('form', $this->outilsFormulaire->getForm());
+                    $this->addParamTwig('element', $this->outilsFormulaire->getElement());
+                }
+                else
+                {
+                    //Sinon, si une page mere existe on y retourne
+                    if($this->outilsPage->getPageMere() != null)
+                    {
+                        $this->defineRedirection($this->outilsPage->getPageMere()->getNomChemin());
+                        foreach($this->outilsPage->getPageMere()->getParams() as $param => $valeur)
+                        {
+                            $this->addParamRedirect($param, $valeur);
+                        }                        
+                    }
+                }        
             } 
         }
         
@@ -284,10 +311,10 @@ class Outils {
         return $this->outilsPage->getPageMere();
     }
 
-    public function setPageParams($params)
-    {
-        $this->outilsPage->setParams($params);
-    }
+    // public function setPageParams($params)
+    // {
+    //     $this->outilsPage->setParams($params);
+    // }
     
 }
 

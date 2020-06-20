@@ -29,11 +29,7 @@ class OutilsPage {
             $this->request = $requestStack->getCurrentRequest();
             $this->route = $this->request->get('_route');
             $this->recupRepoPage();
-            $params = $this->request->attributes->get('_route_params');
-            if(isset($params['idpagemere']))
-            {
-                $this->recupPageMere($params['idpagemere']);
-            }
+            $this->params = $this->request->attributes->get('_route_params');
         }
         
     }
@@ -61,14 +57,14 @@ class OutilsPage {
     {
         return $this->params;
     }
-    public function addParam($cle, $valeur) //A supprimer par la suite ?
-    {
-        $this->params[$cle] = $valeur;
-    }
-    public function setParams($params)
-    {
-        $this->params = $params;
-    }
+    // public function addParam($cle, $valeur) //A supprimer par la suite ?
+    // {
+    //     $this->params[$cle] = $valeur;
+    // }
+    // public function setParams($params)
+    // {
+    //     $this->params = $params;
+    // }
 
     /** Récupère la page mère à partir de son Id
      *
@@ -83,6 +79,13 @@ class OutilsPage {
 
     public function getPageMere()
     {
+        if($this->pageMere == null)
+        {
+            if(!empty($this->params['idpagemere']))
+            {
+                $this->recupPageMere($this->params['idpagemere']);
+            }
+        }
         return $this->pageMere;
     }
 
