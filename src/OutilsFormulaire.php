@@ -104,7 +104,7 @@ class OutilsFormulaire {
             }
             else
             {
-                return true;
+                return 'redirect_true';
             }
         }
         else

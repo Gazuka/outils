@@ -39,7 +39,7 @@ class Outils {
             if($this->outilsFormulaire->getRedirect() != null)
             {
                 //Une redirection doit être effectuer
-                if($this->outilsFormulaire->getRedirect() == true)
+                if($this->outilsFormulaire->getRedirect() == 'redirect_true')
                 {
                     //Si une page mere existe on y retourne
                     if($this->outilsPage->getPageMere() != null)
